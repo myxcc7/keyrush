@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>键速对决</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="./css/style.css?v=20261027d" />
+</head>
+<body>
+  <main id="app">
+    <!-- 首页 -->
+    <section class="screen" id="screen-home">
+      <div class="home-card">
+        <h1 class="logo">键速对决<span>KEY RUSH</span></h1>
+        <p class="subtitle">用最快的手速装最快的逼。</p>
+
+        <div id="auth-area">
+          <div id="auth-form">
+            <label class="field">
+              <span>账号（昵称）</span>
+              <input id="input-auth-name" maxlength="12" placeholder="例如：阿速" autocomplete="username" />
+            </label>
+            <label class="field">
+              <span>密码（至少 6 位，无强度要求）</span>
+              <input id="input-auth-pass" type="password" minlength="6" placeholder="至少 6 位" autocomplete="current-password" />
+            </label>
+            <div class="auth-row">
+              <button id="btn-login" class="btn primary">登录 / 注册</button>
+            </div>
+            <p class="hint" id="auth-hint"></p>
+          </div>
+          <div id="auth-user" hidden>
+            <p class="auth-user-line">
+              当前账号：<strong id="auth-nick"></strong>
+              <button id="btn-logout" class="link">退出登录</button>
+            </p>
+          </div>
+        </div>
+
+        <div id="play-area" hidden>
+          <label class="field">
+            <span>你的昵称</span>
+            <input id="input-nickname" maxlength="12" placeholder="例如：阿速" autocomplete="off" />
+          </label>
+
+          <button id="btn-create" class="btn primary wide">创建房间</button>
+
+          <div class="join-row">
+            <input id="input-room" maxlength="6" placeholder="输入 6 位房间码" autocomplete="off" />
+            <button id="btn-join" class="btn">加入</button>
+          </div>
+
+          <div class="room-list-box">
+            <div class="room-list-head">
+              <span>等待中的房间</span>
+              <button id="btn-refresh-rooms" class="link">刷新</button>
+            </div>
+            <div id="room-list"><p class="hint">加载中…</p></div>
+          </div>
+        </div>
+
+        <div class="home-footer">
+          <button id="btn-leaderboard" class="link">排行榜</button>
+          <span class="dot">·</span>
+          <button id="btn-settings" class="link">连接设置</button>
+          <span id="conn-badge" class="badge">本机演示</span>
+        </div>
+        <p class="hint" id="home-hint"></p>
+      </div>
+    </section>
+
+    <!-- 房间大厅 -->
+    <section class="screen" id="screen-lobby">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">房间码</p>
+            <div class="code-line">
+              <strong id="lobby-code">—</strong>
+              <button id="btn-copy" class="btn tiny ghost">复制</button>
+            </div>
+          </div>
+          <button id="btn-leave-lobby" class="btn tiny ghost">离开</button>
+        </div>
+
+        <div class="players" id="lobby-players"></div>
+
+        <div class="difficulty">
+          <span class="eyebrow">难度</span>
+          <div class="segmented" id="difficulty-seg">
+            <button data-difficulty="easy" class="active">简单</button>
+            <button data-difficulty="medium">中等</button>
+            <button data-difficulty="hard">困难</button>
+          </div>
+          <p class="hint" id="difficulty-note"></p>
+        </div>
+
+        <div class="difficulty">
+          <span class="eyebrow">语言</span>
+          <div class="segmented" id="lang-seg">
+            <button data-lang="zh" class="active">中文</button>
+            <button data-lang="en">English</button>
+            <button data-lang="digit">数字</button>
+          </div>
+          <p class="hint" id="lang-note">中文词库，输入时请使用输入法。</p>
+        </div>
+
+        <button id="btn-start" class="btn primary wide" disabled>等待对手加入…</button>
+        <p class="hint" id="lobby-hint"></p>
+      </div>
+    </section>
+
+    <!-- 对战 -->
+    <section class="screen" id="screen-race">
+      <div class="race-head">
+        <div class="race-meta">
+          <div class="meta-left">
+            <span id="race-difficulty" class="pill">中等</span>
+            <span id="race-round" class="pill">第 1 局 · 0:0</span>
+          </div>
+          <span id="race-timer" class="timer">0.0s</span>
+        </div>
+        <div class="lanes" id="race-lanes"></div>
+      </div>
+
+      <div class="typing-wrap" id="typing-wrap">
+        <div class="typing-text" id="typing-text"></div>
+        <div class="typing-input-box">
+          <span class="typing-input-label">你的输入</span>
+          <textarea id="typing-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="输入区域"></textarea>
+        </div>
+        <div class="overlay hidden" id="countdown-overlay"><span id="countdown-number">3</span></div>
+      </div>
+
+      <p class="hint" id="race-tip">在下方输入框输入，上方原文逐字标出对错；限时随难度 20 / 30 / 40 秒。</p>
+    </section>
+
+    <!-- 结算 -->
+    <section class="screen" id="screen-result">
+      <div class="panel">
+        <p class="eyebrow" id="result-eyebrow">本局结束</p>
+        <h2 id="result-title" class="verdict">—</h2>
+        <div class="match-score" id="result-score">0 : 0</div>
+        <div class="result-grid" id="result-grid"></div>
+        <div class="result-actions">
+          <button id="btn-rematch" class="btn primary">再来一局</button>
+          <button id="btn-back-home" class="btn ghost">返回首页</button>
+          <button id="btn-result-lb" class="btn ghost">排行榜</button>
+        </div>
+        <p class="hint" id="result-hint"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- 排行榜 -->
+  <div class="modal" id="modal-leaderboard" hidden>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>排行榜</h3>
+        <button class="btn tiny ghost" data-close="modal-leaderboard">关闭</button>
+      </div>
+      <div class="lb-tabs" id="lb-tabs">
+        <button data-lb="wins" class="active">胜局榜</button>
+        <button data-lb="avg">平均耗时榜</button>
+      </div>
+      <div id="leaderboard-body"></div>
+      <p class="hint">胜局榜按胜场排序并展示胜/平/负战绩；平均耗时榜每天凌晨 0 点结算一次。</p>
+    </div>
+  </div>
+
+  <!-- 连接设置 -->
+  <div class="modal" id="modal-settings" hidden>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>连接设置</h3>
+        <button class="btn tiny ghost" data-close="modal-settings">关闭</button>
+      </div>
+      <p class="hint">
+        填入 Supabase 项目 URL 与 anon key 后，最多 4 位好友可以在不同网络下同场对战。
+        不填则只能在本浏览器多标签页里演示。
+      </p>
+      <label class="field">
+        <span>Supabase URL</span>
+        <input id="input-sb-url" placeholder="https://xxxx.supabase.co" autocomplete="off" />
+      </label>
+      <label class="field">
+        <span>anon key</span>
+        <input id="input-sb-key" type="password" placeholder="eyJhbGciOi..." autocomplete="off" />
+      </label>
+      <div class="modal-actions">
+        <button id="btn-save-settings" class="btn primary">保存并重连</button>
+        <button id="btn-local-mode" class="btn ghost">使用本机演示</button>
+      </div>
+      <p class="hint">数据库建表脚本：项目内 <code>supabase/schema.sql</code>，在 Supabase SQL Editor 里执行一次即可。</p>
+      <p class="hint" id="settings-hint"></p>
+    </div>
+  </div>
+
+  <button id="btn-audio" class="audio-toggle" type="button">♪ 音乐开</button>
+  <script type="module" src="./js/app.js?v=20261027d"></script>
+</body>
+</html>
